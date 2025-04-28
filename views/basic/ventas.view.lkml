@@ -44,7 +44,7 @@ view: +ventas {
   }
 
   # Nueva dimensión: Clasificación de ventas
-  dimension: sales_classification {
+  dimension: ventas_classification {
     type: string
     sql: CASE
       WHEN ${ventas} < 100 THEN 'Bajas'
@@ -70,29 +70,25 @@ view: +ventas {
     group_label: "@{current_measures}"
     label: "Total ventas (período actual)"
     type: sum
-    sql:
-      CASE
-        WHEN ${fecha.fecha_date} >= ${filter_start_date_date}
-        AND ${fecha.fecha_date} < ${filter_end_date_date}
-        THEN ${ventas}
-        ELSE NULL
-      END ;;
+    sql: CASE
+      WHEN ${fecha.fecha_date} >= ${filter_start_date_date} AND ${fecha.fecha_date} < ${filter_end_date_date}
+      THEN ${ventas}
+      ELSE NULL
+    END ;;
     value_format_name: decimal_0
     description: "Suma total de las ventas realizadas durante el período actual definido por los filtros de fecha."
   }
 
   # Medida: Ventas en el período anterior
   measure: ventas_previous_period {
-    group_label: "@{prev_year_measures}"
+    group_label: "@{prev_period_measures}"
     label: "Total ventas (período anterior)"
     type: sum
-    sql:
-      CASE
-        WHEN ${fecha.fecha_date} >= ${previous_start_date}
-        AND ${fecha.fecha_date} < ${filter_start_date_date}
-        THEN ${ventas}
-        ELSE NULL
-      END ;;
+    sql: CASE
+      WHEN ${fecha.fecha_date} >= ${previous_start_date} AND ${fecha.fecha_date} < ${filter_start_date_date}
+      THEN ${ventas}
+      ELSE NULL
+    END ;;
     value_format_name: decimal_0
     description: "Suma total de las ventas realizadas durante el período anterior al período actual definido por los filtros de fecha."
   }

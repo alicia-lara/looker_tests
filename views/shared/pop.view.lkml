@@ -41,7 +41,7 @@ view: pop {
     view_label: "_PoP"
     type: time
     timeframes: [raw, date, month]
-    sql: CASE WHEN {% date_start date_filter %} IS NULL THEN DATEADD(MONTH, -3, GETDATE()) ELSE CAST({% date_start date_filter %} AS DATE) END;;
+    sql: CASE WHEN {% date_start date_filter %} IS NULL THEN ${default_start_date} ELSE CAST({% date_start date_filter %} AS DATE) END;;
     description: "Fecha de inicio del período actual. Por defecto, tres meses antes de la fecha actual."
   }
 
@@ -50,7 +50,7 @@ view: pop {
     view_label: "_PoP"
     type: time
     timeframes: [raw, date, month]
-    sql: CASE WHEN {% date_end date_filter %} IS NULL THEN GETDATE() ELSE CAST({% date_end date_filter %} AS DATE) END;;
+    sql: CASE WHEN {% date_end date_filter %} IS NULL THEN ${default_end_date} ELSE CAST({% date_end date_filter %} AS DATE) END;;
     description: "Fecha de fin del período actual. Por defecto, la fecha actual."
   }
 
@@ -95,21 +95,12 @@ view: pop {
     view_label: "_PoP"
     label: "Clasificación de Períodos"
     type: string
-    case: {
-      when: {
-        sql: ${is_current_period} = 1;;
-        label: "Período actual"
-      }
-      when: {
-        sql: ${is_previous_period} = 1;;
-        label: "Período anterior"
-      }
-      when: {
-        sql: ${is_previous_year} = 1;;
-        label: "Año anterior"
-      }
-      else: "Fuera de período"
-    }
+    sql: CASE
+      WHEN ${is_current_period} THEN 'Período actual'
+      WHEN ${is_previous_period} THEN 'Período anterior'
+      WHEN ${is_previous_year} THEN 'Año anterior'
+      ELSE 'Fuera de período'
+    END;;
     description: "Clasifica los datos en períodos actuales, anteriores o del año anterior."
   }
 

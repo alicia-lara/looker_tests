@@ -9,7 +9,6 @@ project_name: "ArquitecturaLookerAlicia"
 
 # Aqui podemos definir constantes, variaciones de dimensiones, etc.
 
-
 constant: variacion_format_euros {
   # {{rendered_value}} es un parámetro liquid que hace referencia al valor que devuelva la
   # dimensión dentro de la que se está usando, empleando el formato que se haya definido
@@ -151,9 +150,30 @@ constant: variacion_format_inverse {
   {% endif %}"
 }
 
+constant: default_start_date {
+  type: date
+  value: DATEADD(MONTH, -3, GETDATE())
+  description: "Fecha predeterminada de inicio: tres meses antes de la fecha actual."
+}
+
+constant: default_end_date {
+  type: date
+  value: GETDATE()
+  description: "Fecha predeterminada de fin: la fecha actual."
+}
+
 constant: non_comparison_measures { value: "Non comparison measures"}
-constant: current_measures { value: "Current period measures"}
-constant: prev_period_measures { value: "Previous period measures"}
-constant: prev_year_measures { value: "Previous year measures"}
+constant: current_measures { 
+  value: "Current period measures"
+  description: "Etiqueta para medidas del período actual."
+}
+constant: prev_period_measures { 
+  value: "Previous period measures"
+  description: "Etiqueta para medidas del período anterior."
+}
+constant: prev_year_measures { 
+  value: "Previous year measures"
+  description: "Etiqueta para medidas del año anterior."
+}
 constant: interannual_variations { value: "Interannual variations"}
 constant: interperiod_variations { value: "Interperiod variations"}
