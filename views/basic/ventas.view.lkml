@@ -54,20 +54,21 @@ view: +ventas {
     description: "Clasificación de las ventas según el monto (Bajas, Medias, Altas)."
   }
 
-# Esto se puede hacer más elegante, pero me llevo fatal con sql server y chico, me he cansado de hacer debug. Lo suyo sería algo tipo fecha.fecha o fecha.fecha_date no me acuerdo.
+  # Dimensiones y medidas relacionadas con PoP (Período sobre Período)
+
+  # Dimensión: Fecha de comparación para cálculos PoP
   dimension_group: comparison_date {
     type: time
     hidden: yes
     timeframes: [raw, date]
     sql: (SELECT fecha FROM dbo.d_fecha WHERE id_fecha = ${TABLE}.id_fecha) ;;
-    description: "Fecha para cálculos PoP"
+    description: "Fecha derivada de la tabla de fechas (dbo.d_fecha) para realizar cálculos de comparación entre períodos. Esta dimensión es clave para los cálculos PoP."
   }
 
-
-  # Medidas para comparación de períodos
+  # Medida: Ventas en el período actual
   measure: ventas_current_period {
     group_label: "@{current_measures}"
-    label: "Total ventas (periodo actual)"
+    label: "Total ventas (período actual)"
     type: sum
     sql:
       CASE
@@ -77,8 +78,10 @@ view: +ventas {
         ELSE NULL
       END ;;
     value_format_name: decimal_0
+    description: "Suma total de las ventas realizadas durante el período actual definido por los filtros de fecha."
   }
 
+  # Medida: Ventas en el período anterior
   measure: ventas_previous_period {
     group_label: "@{prev_year_measures}"
     label: "Total ventas (período anterior)"
@@ -91,5 +94,6 @@ view: +ventas {
         ELSE NULL
       END ;;
     value_format_name: decimal_0
+    description: "Suma total de las ventas realizadas durante el período anterior al período actual definido por los filtros de fecha."
   }
 }

@@ -1,12 +1,15 @@
-# PoP se utiliza para comparar periodos temporales. La mayor paranoia de Looker que va a ver hasta ahora. Good Luck !
+# Descripción general de la vista "pop"
+# Esta vista se utiliza para cálculos de comparación de períodos (PoP).
+# Incluye dimensiones y filtros para definir períodos actuales, anteriores y del año anterior.
 
 view: pop {
   extension: required
 
+  # Filtro de fecha para cálculos dinámicos
   filter: date_filter {
     view_label: "_PoP"
-    label: "Date filter"
-    description: "Use this date filter in combination with the timeframes dimension for dynamic date filtering"
+    label: "Filtro de Fecha"
+    description: "Filtro de fecha utilizado para cálculos dinámicos de períodos."
     type: date
   }
 
@@ -32,12 +35,14 @@ view: pop {
     ]
   }
 
+  # Dimensiones relacionadas con períodos
   dimension_group: filter_start_date {
     hidden: yes
     view_label: "_PoP"
     type: time
     timeframes: [raw, date, month]
     sql: CASE WHEN {% date_start date_filter %} IS NULL THEN DATEADD(MONTH, -3, GETDATE()) ELSE CAST({% date_start date_filter %} AS DATE) END;;
+    description: "Fecha de inicio del período actual. Por defecto, tres meses antes de la fecha actual."
   }
 
   dimension_group: filter_end_date {
@@ -46,6 +51,7 @@ view: pop {
     type: time
     timeframes: [raw, date, month]
     sql: CASE WHEN {% date_end date_filter %} IS NULL THEN GETDATE() ELSE CAST({% date_end date_filter %} AS DATE) END;;
+    description: "Fecha de fin del período actual. Por defecto, la fecha actual."
   }
 
   dimension: interval {
@@ -53,15 +59,17 @@ view: pop {
     view_label: "_PoP"
     type: number
     sql: DATEDIFF(DAY, ${filter_start_date_raw}, ${filter_end_date_raw});;
+    description: "Duración del período actual en días."
   }
 
-  #start date of the previous period
+  # Dimensiones para períodos anteriores
   dimension_group: previous_start {
     hidden: yes
     view_label: "_PoP"
     type: time
     timeframes: [raw, date]
     sql: DATEADD(DAY, -${interval}, ${filter_start_date_raw});;
+    description: "Fecha de inicio del período anterior."
   }
 
   dimension_group: previous_year_start {
@@ -70,6 +78,7 @@ view: pop {
     type: time
     timeframes: [raw, date]
     sql: DATEADD(DAY, -365, ${filter_start_date_date});;
+    description: "Fecha de inicio del mismo período en el año anterior."
   }
 
   dimension_group: previous_year_end {
@@ -78,46 +87,51 @@ view: pop {
     type: time
     timeframes: [raw, date]
     sql: DATEADD(DAY, ${interval}, ${previous_year_start_date});;
+    description: "Fecha de fin del mismo período en el año anterior."
   }
 
+  # Dimensión para clasificar períodos
   dimension: timeframes {
     view_label: "_PoP"
-    label: "Timeframes"
+    label: "Clasificación de Períodos"
     type: string
     case: {
       when: {
         sql: ${is_current_period} = 1;;
-        label: "Periodo actual"
+        label: "Período actual"
       }
       when: {
         sql: ${is_previous_period} = 1;;
-        label: "Periodo anterior"
+        label: "Período anterior"
       }
       when: {
         sql: ${is_previous_year} = 1;;
         label: "Año anterior"
       }
-      else: "Not in time period"
+      else: "Fuera de período"
     }
+    description: "Clasifica los datos en períodos actuales, anteriores o del año anterior."
   }
 
-
-  ## For filtered measures
+  # Dimensiones booleanas para identificar períodos
   dimension: is_current_period {
     hidden: yes
     type: yesno
     sql: ${comparison_date_date} >= ${filter_start_date_date} AND ${comparison_date_date} < ${filter_end_date_date};;
+    description: "Indica si la fecha pertenece al período actual."
   }
 
   dimension: is_previous_period {
     hidden: yes
     type: yesno
     sql: ${comparison_date_date} >= ${previous_start_date} AND ${comparison_date_date} < ${filter_start_date_date};;
+    description: "Indica si la fecha pertenece al período anterior."
   }
 
   dimension: is_previous_year {
     hidden: yes
     type: yesno
     sql: ${comparison_date_date} >= ${previous_year_start_date} AND ${comparison_date_date} < ${previous_year_end_date};;
+    description: "Indica si la fecha pertenece al mismo período del año anterior."
   }
 }
