@@ -77,7 +77,7 @@ view: pop {
     view_label: "_PoP"
     type: time
     timeframes: [raw, date]
-    sql: DATEADD(DAY, -365, ${filter_start_date_date});;
+    sql: DATEADD(DAY, -365, ${filter_start_date_raw});;
     description: "Fecha de inicio del mismo período en el año anterior."
   }
 
@@ -86,7 +86,7 @@ view: pop {
     view_label: "_PoP"
     type: time
     timeframes: [raw, date]
-    sql: DATEADD(DAY, ${interval}, ${previous_year_start_date});;
+    sql: DATEADD(DAY, ${interval}, ${previous_year_start_raw});;
     description: "Fecha de fin del mismo período en el año anterior."
   }
 
@@ -108,14 +108,14 @@ view: pop {
   dimension: is_current_period {
     hidden: yes
     type: yesno
-    sql: ${comparison_date_date} >= ${filter_start_date_date} AND ${comparison_date_date} < ${filter_end_date_date};;
+    sql: ${comparison_date_date} >= ${filter_start_date_raw} AND ${comparison_date_date} < ${filter_end_date_raw};;
     description: "Indica si la fecha pertenece al período actual."
   }
 
   dimension: is_previous_period {
     hidden: yes
     type: yesno
-    sql: ${comparison_date_date} >= ${previous_start_date} AND ${comparison_date_date} < ${filter_start_date_date};;
+    sql: ${comparison_date_date} >= ${previous_start_date} AND ${comparison_date_date} < ${filter_start_date_raw};;
     description: "Indica si la fecha pertenece al período anterior."
   }
 
