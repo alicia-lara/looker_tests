@@ -92,4 +92,60 @@ view: +ventas {
     value_format_name: decimal_0
     description: "Suma total de las ventas realizadas durante el período anterior al período actual definido por los filtros de fecha."
   }
+
+  # Medida: Ventas en el mismo período del año anterior
+  measure: ventas_previous_year {
+    group_label: "@{prev_year_measures}"
+    label: "Total ventas (año anterior)"
+    type: sum
+    sql: CASE
+      WHEN ${fecha.fecha_date} >= ${previous_year_start_date} AND ${fecha.fecha_date} < ${previous_year_end_date}
+      THEN ${ventas}
+      ELSE NULL
+    END ;;
+    value_format_name: decimal_0
+    description: "Suma total de las ventas realizadas durante el mismo período pero en el año anterior."
+  }
+
+  # Variación entre el período actual y el período anterior
+  measure: variacion_interperiod {
+    group_label: "@{interperiod_variations}"
+    label: "Variación vs período anterior"
+    type: number
+    sql: 
+      {% if pop_parameters.tipo_variacion._parameter_value == 'relativa' %}
+        CASE 
+          WHEN ${ventas_previous_period} = 0 THEN NULL
+          WHEN ${ventas_previous_period} IS NULL THEN NULL
+          ELSE (${ventas_current_period} - ${ventas_previous_period}) * 100.0 / NULLIF(${ventas_previous_period}, 0)
+        END
+      {% else %}
+        (${ventas_current_period} - ${ventas_previous_period})
+      {% endif %}
+    ;;
+    html: @{variacion_format} ;;
+    value_format_name: decimal_2
+    description: "Variación entre el período actual y el período anterior, puede ser relativa (%) o absoluta."
+  }
+
+  # Variación entre el período actual y el mismo período del año anterior
+  measure: variacion_interannual {
+    group_label: "@{interannual_variations}"
+    label: "Variación vs año anterior"
+    type: number
+    sql: 
+      {% if pop_parameters.tipo_variacion._parameter_value == 'relativa' %}
+        CASE 
+          WHEN ${ventas_previous_year} = 0 THEN NULL
+          WHEN ${ventas_previous_year} IS NULL THEN NULL
+          ELSE (${ventas_current_period} - ${ventas_previous_year}) * 100.0 / NULLIF(${ventas_previous_year}, 0)
+        END
+      {% else %}
+        (${ventas_current_period} - ${ventas_previous_year})
+      {% endif %}
+    ;;
+    html: @{variacion_format} ;;
+    value_format_name: decimal_2
+    description: "Variación entre el período actual y el mismo período del año anterior, puede ser relativa (%) o absoluta."
+  }
 }
