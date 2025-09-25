@@ -2,7 +2,7 @@
 view: pais {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: dbo.d_pais ;;
+  sql_table_name: looker_poc.d_pais ;;
   drill_fields: [id_pais]
 
   # This primary key is the unique key for this table in the underlying database.

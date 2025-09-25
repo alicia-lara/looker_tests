@@ -3,7 +3,7 @@
 # Incluye las vistas y explores necesarios para analizar los datos de ventas.
 # También define políticas de caché y conexión a la base de datos.
 
-connection: "formacion_analytics_2025_test"
+connection: "alicia_looker_poc"
 
 # Incluye todas las vistas y explores del proyecto.
 include: "/views/basic/*.view.lkml"

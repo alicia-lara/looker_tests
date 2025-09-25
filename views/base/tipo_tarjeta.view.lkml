@@ -2,7 +2,7 @@
 view: tipo_tarjeta {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: dbo.d_tipo_tarjeta ;;
+  sql_table_name: looker_poc.d_tipo_tarjeta ;;
   drill_fields: [id_tipo_tarjeta]
 
   # This primary key is the unique key for this table in the underlying database.

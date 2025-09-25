@@ -2,7 +2,7 @@
 view: ventas {
   # The sql_table_name parameter indicates the underlying database table
   # to be used for all fields in this view.
-  sql_table_name: dbo.h_ventas ;;
+  sql_table_name: civica-civdaxa-dev.looker_poc.h_ventas ;;
   drill_fields: [id_fecha]
 
   # This primary key is the unique key for this table in the underlying database.
